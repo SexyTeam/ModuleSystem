@@ -1,48 +1,26 @@
-import club.eridani.module.*
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
+import club.eridani.module.Module
+import club.eridani.module.mode
+import club.eridani.module.number
 
-@Serializable
-data class MyModuleConfig(@Serializable(with = AttackRange::class)   val attackRange: FloatRangeValue, var ignoreFriend: Boolean, ) : ModuleConfig(false) {
-    private class AttackRange : FloatRangeSerializer(0f, 15f)
+class MyModule : Module("Test") {
+    enum class AttackMode {
+        CPS, CPT
+    }
+
+    var range by number("Range", 3.0f) min 1.0f max 10f
+    var attackMode by mode("AttackMode", AttackMode.values())
+    var cps by number("CPS", 8) min 1 max 20 visible { attackMode == AttackMode.CPS }
+    var cpt by number("CPT", 1) min 1 max 50 visible { attackMode == AttackMode.CPT }
 }
 
 fun main() {
-    val modules = mutableListOf<Module<out MyModuleConfig>>()
-    modules += myModule
-    println(myModule.config)
-    println(myModule.configString)
-    println(myModule.config.attackRange.max)
-    myModule.importConfig("{\n" +
-            "    \"enable\": false,\n" +
-            "    \"attackRange\": 1,\n" +
-            "    \"ignoreFriend\": true\n" +
-            "}")
-    println(myModule.config.attackRange.max)
-//    println(PrettyPrintJson.encodeToString(MyConfig.serializer(),
-//        MyConfig("Good Module System", myModule.config)))
+    val module = MyModule()
+    println(module.toConfig())
+    module.fromConfig("Test.Range = 3.5\n" +
+            "Test.AttackMode = CPS\n" +
+            "Test.CPS = 8\n" +
+            "Test.CPT = 1\n" +
+            "NONE.NOTHING = 1")
 
-    myModule.config.ignoreFriend = false
-    println(myModule.configString)
+    println(module.range)
 }
-
-@Serializable
-data class MyConfig(
-    @SerialName("custom_name") val customName: String,
-    @SerialName("my_module") val myModule: MyModuleConfig,
-)
-
-val myModule = module("TestModule", "MISC", MyModuleConfig(FloatRangeValue(3f, 0f, 15f), true), MyModuleConfig.serializer()) {
-    key = 32
-
-    onEnable {
-        println("Enable")
-    }
-
-    onDisable {
-        println("Disable")
-    }
-
-}
-
-
