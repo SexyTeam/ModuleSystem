@@ -3,12 +3,12 @@ package club.eridani.module
 import kotlin.reflect.KProperty
 
 
-open class Value<T>(val name: String, val default: T, var value: T = default, var visible: () -> Boolean = { true }) {
-    operator fun getValue(thisRef: Any, property: KProperty<*>): T {
+open class Value<T>(val name: String, val default: T, open var value: T = default, var visible: () -> Boolean = { true }) {
+    open operator fun getValue(thisRef: Any, property: KProperty<*>): T {
         return value
     }
 
-    operator fun setValue(thisRef: Any, property: KProperty<*>, value: T) {
+    open operator fun setValue(thisRef: Any, property: KProperty<*>, value: T) {
         this.value = value
     }
 
@@ -37,6 +37,17 @@ open class NumberValue<N : Number>(name: String, default: N, min: N?, max: N?) :
     lateinit var min: N
     lateinit var max: N
 
+    override var value: N = default
+        get() = super.value
+        set(new) {
+            when (value) {
+                is Int -> if ((new as Int) >= (min as Int) && (new as Int) <= (max as Int)) { field = new }
+                is Long -> if ((new as Long) >= (min as Long) && (new as Long) <= (max as Long)) { field = new }
+                is Float -> if ((new as Float) >= (min as Float) && (new as Float) <= (max as Float)) { field = new }
+                is Double -> if ((new as Double) >= (min as Double) && (new as Double) <= (max as Double)) { field = new }
+            }
+        }
+
     init {
         if (min != null) {
             this.min = min
@@ -48,6 +59,11 @@ open class NumberValue<N : Number>(name: String, default: N, min: N?, max: N?) :
 
     infix fun min(value: N) = this.apply { min = value }
     infix fun max(value: N) = this.apply { max = value }
+
+
+    override fun setValue(thisRef: Any, property: KProperty<*>, new: N) {
+        value = new
+    }
 
     override fun fromString(input: String) {
         when (value) {

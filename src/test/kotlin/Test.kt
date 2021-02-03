@@ -16,11 +16,13 @@ class MyModule : Module("Test") {
 fun main() {
     val module = MyModule()
     println(module.toConfig())
-    module.fromConfig("Test.Range = 3.5\n" +
+    module.fromConfig("Test.Range = 11.0\n" +
             "Test.AttackMode = CPS\n" +
             "Test.CPS = 8\n" +
             "Test.CPT = 1\n" +
             "NONE.NOTHING = 1")
 
+    println(module.range)
+    module.range = 20f
     println(module.range)
 }
