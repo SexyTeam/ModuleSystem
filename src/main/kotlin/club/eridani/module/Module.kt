@@ -3,7 +3,7 @@ package club.eridani.module
 
 
 open class Module(open val name: String) {
-    val values = mutableMapOf<String, Value<*>>()
+    val values = linkedMapOf<String, Value<*>>()
 
     fun toConfig() =  values.values.joinToString("\n") { "$name.${it.name} = ${it.value.toString()}" }
 

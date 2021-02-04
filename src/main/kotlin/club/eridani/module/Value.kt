@@ -26,7 +26,7 @@ fun <T> Module.value(name: String, default: T) = Value(name, default).apply { th
 
 open class StringValue(name: String, default: String) : Value<String>(name, default) {
     override fun fromString(input: String) {
-        value = input
+        value = input.replace("\\r", "\r")
     }
 }
 
