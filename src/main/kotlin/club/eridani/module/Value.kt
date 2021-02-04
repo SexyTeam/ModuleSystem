@@ -33,18 +33,22 @@ open class StringValue(name: String, default: String) : Value<String>(name, defa
 fun Module.string(name: String, default: String) =
     StringValue(name, default).apply { this@string.values[name] = (this) }
 
-open class NumberValue<N : Number>(name: String, default: N, min: N?, max: N?) : Value<N>(name, default) {
+open class NumberValue<N : Number>(name: String, default: N, min: N?, max: N?, var limit : Boolean = true) : Value<N>(name, default) {
     lateinit var min: N
     lateinit var max: N
 
     override var value: N = default
         get() = super.value
         set(new) {
-            when (value) {
-                is Int -> if ((new as Int) >= (min as Int) && (new as Int) <= (max as Int)) { field = new }
-                is Long -> if ((new as Long) >= (min as Long) && (new as Long) <= (max as Long)) { field = new }
-                is Float -> if ((new as Float) >= (min as Float) && (new as Float) <= (max as Float)) { field = new }
-                is Double -> if ((new as Double) >= (min as Double) && (new as Double) <= (max as Double)) { field = new }
+            if (limit) {
+                when (value) {
+                    is Int -> if ((new as Int) >= (min as Int) && (new as Int) <= (max as Int)) { field = new }
+                    is Long -> if ((new as Long) >= (min as Long) && (new as Long) <= (max as Long)) { field = new }
+                    is Float -> if ((new as Float) >= (min as Float) && (new as Float) <= (max as Float)) { field = new }
+                    is Double -> if ((new as Double) >= (min as Double) && (new as Double) <= (max as Double)) { field = new }
+                }
+            } else {
+                field = new
             }
         }
 
@@ -61,9 +65,6 @@ open class NumberValue<N : Number>(name: String, default: N, min: N?, max: N?) :
     infix fun max(value: N) = this.apply { max = value }
 
 
-    override fun setValue(thisRef: Any, property: KProperty<*>, new: N) {
-        value = new
-    }
 
     override fun fromString(input: String) {
         when (value) {
@@ -89,7 +90,7 @@ open class ModeValue<E : Enum<E>>(name: String, default: E, var modes: Array<E>)
     }
 
     override fun fromString(input: String) {
-        value = modes.find { it.name.equals(input, true) }!!
+        value = modes.find { it.name.equals(input, true) } ?: value
     }
 }
 
