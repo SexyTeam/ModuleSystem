@@ -18,4 +18,10 @@ open class Module(open val name: String) {
             }
         }
     }
+
+
+    infix fun <T> String.valueOf(default: T) = valueOf(this, default)
+    infix fun String.textOf(default: String) = textOf(this, default)
+    infix fun <N : Number> String.numberOf(default: N) = numberOf(this, default)
+    infix fun <M : Enum<M>> String.modeOf(modes :Array<M>) = modeOf(this, modes)
 }

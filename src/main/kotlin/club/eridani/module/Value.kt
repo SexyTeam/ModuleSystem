@@ -22,9 +22,9 @@ open class Value<T>(val name: String, val default: T, open var value: T = defaul
     }
 }
 
-fun <T> Module.value(name: String, default: T) = Value(name, default).apply { this@value.values[name] = (this) }
+fun <T> Module.valueOf(name: String, default: T) = Value(name, default).apply { this@valueOf.values[name] = (this) }
 
-open class StringValue(name: String, default: String) : Value<String>(name, default) {
+open class TextValue(name: String, default: String) : Value<String>(name, default) {
     override fun fromString(input: String) {
         value = input.replace("\\r", "\r")
     }
@@ -34,8 +34,8 @@ open class StringValue(name: String, default: String) : Value<String>(name, defa
     }
 }
 
-fun Module.string(name: String, default: String) =
-    StringValue(name, default).apply { this@string.values[name] = (this) }
+fun Module.textOf(name: String, default: String) =
+    TextValue(name, default).apply { this@textOf.values[name] = (this) }
 
 open class NumberValue<N : Number>(name: String, default: N, min: N?, max: N?, var limit : Boolean = true) : Value<N>(name, default) {
     lateinit var min: N
@@ -80,8 +80,8 @@ open class NumberValue<N : Number>(name: String, default: N, min: N?, max: N?, v
     }
 }
 
-fun <N : Number> Module.number(name: String, default: N, min: N? = null, max: N? = null) =
-    NumberValue(name, default, min, max).apply { this@number.values[name] = (this) }
+fun <N : Number> Module.numberOf(name: String, default: N, min: N? = null, max: N? = null) =
+    NumberValue(name, default, min, max).apply { this@numberOf.values[name] = (this) }
 
 open class ModeValue<E : Enum<E>>(name: String, default: E, var modes: Array<E>) : Value<E>(name, default) {
     fun next(): E {
@@ -98,5 +98,5 @@ open class ModeValue<E : Enum<E>>(name: String, default: E, var modes: Array<E>)
     }
 }
 
-fun <E : Enum<E>> Module.mode(name: String, modes: Array<E>, default: E = modes.first()) =
-    ModeValue(name, default, modes).apply { this@mode.values[name] = (this) }
+fun <E : Enum<E>> Module.modeOf(name: String, modes: Array<E>, default: E = modes.first()) =
+    ModeValue(name, default, modes).apply { this@modeOf.values[name] = (this) }
