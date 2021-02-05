@@ -28,6 +28,10 @@ open class StringValue(name: String, default: String) : Value<String>(name, defa
     override fun fromString(input: String) {
         value = input.replace("\\r", "\r")
     }
+
+    override fun toString(): String {
+        return super.toString().replace("\r", "\\r")
+    }
 }
 
 fun Module.string(name: String, default: String) =
